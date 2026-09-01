@@ -60,7 +60,7 @@ const HeroSection: React.FC = () => {
             className="text-accent font-light uppercase tracking-wide leading-snug max-w-[160px] sm:max-w-[220px] md:max-w-[260px]"
             style={{ fontSize: 'clamp(0.75rem, 1.4vw, 1.5rem)' }}
           >
-            A full-stack builder crafting AI-powered web experiences that solve real-world problems.
+            A full-stack builder crafting web experiences that solve real world problems.
           </p>
         </FadeIn>
 

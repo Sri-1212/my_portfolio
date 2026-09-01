@@ -6,8 +6,8 @@ const row1 = [
 ];
 
 const row2 = [
-  'Arduino UNO', 'ESP32', 'Sensors', 'IoT Systems', 'Git',
-  'GitHub', 'VS Code', 'MERN Stack', 'Cloud Computing', 'Express.js',
+  'RAG', 'Postman', 'Sensors', 'ESP32', 'Git',
+  'GitHub', 'VS Code', 'MERN Stack', 'AI integration', 'Express.js',
 ];
 
 // Triple for seamless loop

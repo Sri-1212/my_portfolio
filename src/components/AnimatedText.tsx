@@ -1,64 +1,66 @@
 import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
 
 interface AnimatedTextProps {
   text: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-const AnimatedText: React.FC<AnimatedTextProps> = ({ text, className = '' }) => {
+const AnimatedText: React.FC<AnimatedTextProps> = ({ text, className = '', style }) => {
   const containerRef = useRef<HTMLParagraphElement>(null);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start 0.8', 'end 0.2'],
+    offset: ['start 0.85', 'end 0.35'],
   });
 
-  const chars = text.split('');
+  const words = text.split(' ').filter(Boolean);
 
   return (
-    <p ref={containerRef} className={`relative ${className}`}>
-      {/* Invisible placeholder for layout */}
-      <span className="invisible">{text}</span>
-      {/* Animated characters overlaid */}
-      <span className="absolute inset-0">
-        {chars.map((char, i) => (
-          <AnimatedChar
-            key={i}
-            char={char}
-            index={i}
-            total={chars.length}
-            scrollYProgress={scrollYProgress}
-          />
-        ))}
-      </span>
+    <p ref={containerRef} className={`relative leading-relaxed ${className}`} style={style}>
+      {words.map((word, i) => (
+        <AnimatedWord
+          key={`${word}-${i}`}
+          word={word}
+          index={i}
+          total={words.length}
+          scrollYProgress={scrollYProgress}
+        />
+      ))}
     </p>
   );
 };
 
-interface AnimatedCharProps {
-  char: string;
+interface AnimatedWordProps {
+  word: string;
   index: number;
   total: number;
-  scrollYProgress: any;
+  scrollYProgress: MotionValue<number>;
 }
 
-const AnimatedChar: React.FC<AnimatedCharProps> = ({
-  char,
+const AnimatedWord: React.FC<AnimatedWordProps> = ({
+  word,
   index,
   total,
   scrollYProgress,
 }) => {
-  const start = index / total;
-  const end = (index + 1) / total;
+  const start = (index / total) * 0.85;
+  const end = Math.min(1, start + (1 / total) * 2.5);
 
-  const opacity = useTransform(scrollYProgress, [start, end], [0.2, 1]);
+  const opacity = useTransform(scrollYProgress, [start, end], [0.45, 1]);
+  const color = useTransform(scrollYProgress, [start, end], ['#71767B', '#FFFFFF']);
 
   return (
-    <motion.span style={{ opacity }}>
-      {char === ' ' ? '\u00A0' : char}
+    <motion.span
+      className="inline-block mr-[0.28em]"
+      style={{ opacity, color }}
+    >
+      {word}
     </motion.span>
   );
 };
 
 export default AnimatedText;
+
+

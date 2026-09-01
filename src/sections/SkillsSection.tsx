@@ -11,87 +11,76 @@ import {
   CircuitBoard,
   Cpu,
   Bot,
-  Zap,
 } from 'lucide-react';
 
 interface SkillItem {
   name: string;
-  isAI?: boolean;
-  isCore?: boolean;
-  description?: string;
 }
 
 interface SkillGroup {
   id: string;
   title: string;
   icon: React.ElementType;
-  accentColor: string;
   skills: SkillItem[];
 }
 
 const mainSkillGroups: SkillGroup[] = [
   {
-    id: 'ai-specialty',
-    title: 'AI & Next-Gen Systems',
-    icon: Sparkles,
-    accentColor: '#FFD9EC',
-    skills: [
-      { name: 'AI Integration', isAI: true, description: 'LLM APIs & Automation' },
-      { name: 'RAG', isAI: true, description: 'Retrieval Augmented Generation' },
-    ],
-  },
-  {
     id: 'core-languages',
     title: 'Core Languages',
     icon: Code2,
-    accentColor: '#E8B4E0',
     skills: [
-      { name: 'C++', isCore: true },
-      { name: 'JavaScript', isCore: true },
-      { name: 'SQL', isCore: true },
+      { name: 'C++' },
+      { name: 'JavaScript' },
+      { name: 'SQL' },
     ],
   },
   {
     id: 'frontend',
     title: 'Frontend Engineering',
     icon: Layers,
-    accentColor: '#C9A7FF',
     skills: [
-      { name: 'React.js', isCore: true },
-      { name: 'Tailwind CSS', isCore: true },
+      { name: 'React.js' },
+      { name: 'Tailwind CSS' },
     ],
   },
   {
     id: 'backend',
     title: 'Backend & APIs',
     icon: Server,
-    accentColor: '#B76CE0',
     skills: [
-      { name: 'Node.js', isCore: true },
-      { name: 'Express.js', isCore: true },
-      { name: 'REST APIs', isCore: true },
+      { name: 'Node.js' },
+      { name: 'Express.js' },
+      { name: 'REST APIs' },
     ],
   },
   {
     id: 'databases',
     title: 'Database Architecture',
     icon: Database,
-    accentColor: '#E8B4E0',
     skills: [
-      { name: 'MongoDB', isCore: true },
-      { name: 'Supabase', isCore: true },
-      { name: 'MySQL', isCore: true },
+      { name: 'MongoDB' },
+      { name: 'Supabase' },
+      { name: 'MySQL' },
+    ],
+  },
+  {
+    id: 'ai-systems',
+    title: 'AI & Next-Gen Systems',
+    icon: Sparkles,
+    skills: [
+      { name: 'AI Integration' },
+      { name: 'RAG' },
     ],
   },
   {
     id: 'tools',
     title: 'Tools & DevOps',
     icon: Wrench,
-    accentColor: '#F3D9F0',
     skills: [
-      { name: 'Git', isCore: true },
-      { name: 'GitHub', isCore: true },
-      { name: 'Postman', isCore: true },
+      { name: 'Git' },
+      { name: 'GitHub' },
+      { name: 'Postman' },
     ],
   },
 ];
@@ -113,11 +102,11 @@ const InteractiveSkillCard: React.FC<{
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [10, -10]), {
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), {
     damping: 20,
     stiffness: 200,
   });
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-10, 10]), {
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), {
     damping: 20,
     stiffness: 200,
   });
@@ -137,7 +126,6 @@ const InteractiveSkillCard: React.FC<{
   };
 
   const GroupIcon = group.icon;
-  const isAIGroup = group.id === 'ai-specialty';
 
   return (
     <motion.div
@@ -153,42 +141,25 @@ const InteractiveSkillCard: React.FC<{
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.6, delay: index * 0.08, ease: [0.25, 0.1, 0.25, 1] }}
-      className={`relative rounded-3xl p-6 sm:p-7 transition-all duration-300 ${
-        isAIGroup
-          ? 'md:col-span-2 bg-gradient-to-br from-[#1c1224]/90 via-[#160f1e]/80 to-[#0f0a15]/90 border-2 border-[#E8B4E0]/60 shadow-[0_0_35px_rgba(201,167,255,0.18)]'
-          : 'bg-[#121216]/80 border border-[#F3D9F0]/15 hover:border-[#F3D9F0]/40 shadow-[0_4px_24px_rgba(0,0,0,0.4)]'
-      } backdrop-blur-xl group`}
+      className="relative rounded-3xl p-6 sm:p-7 transition-all duration-300 bg-[#121216]/80 border border-[#F3D9F0]/15 hover:border-[#F3D9F0]/40 shadow-[0_4px_24px_rgba(0,0,0,0.4)] backdrop-blur-xl group"
     >
       {/* Background ambient spotlight glow that tracks hover */}
       <div
         className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{
-          background: `radial-gradient(400px circle at ${(mouseX.get() + 0.5) * 100}% ${(mouseY.get() + 0.5) * 100}%, ${
-            isAIGroup ? 'rgba(232,180,224,0.18)' : 'rgba(243,217,240,0.1)'
-          }, transparent 70%)`,
+          background: `radial-gradient(350px circle at ${(mouseX.get() + 0.5) * 100}% ${(mouseY.get() + 0.5) * 100}%, rgba(243,217,240,0.1), transparent 70%)`,
         }}
       />
 
       {/* Header with Icon & Category Title */}
       <div className="flex items-center justify-between gap-3 mb-5">
         <div className="flex items-center gap-3">
-          <div
-            className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110 ${
-              isAIGroup
-                ? 'bg-gradient-to-tr from-[#C13584]/40 to-[#B76CE0]/40 border border-[#FFD9EC]/50 text-[#FFD9EC]'
-                : 'bg-[#F3D9F0]/10 border border-[#F3D9F0]/20 text-[#F3D9F0]'
-            }`}
-          >
-            <GroupIcon className={`w-5 h-5 ${isAIGroup ? 'animate-pulse' : ''}`} />
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110 bg-[#F3D9F0]/10 border border-[#F3D9F0]/20 text-[#F3D9F0]">
+            <GroupIcon className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-white font-semibold text-base sm:text-lg tracking-wide flex items-center gap-2">
+            <h3 className="text-white font-semibold text-base sm:text-lg tracking-wide">
               {group.title}
-              {isAIGroup && (
-                <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-gradient-to-r from-[#C13584] to-[#B76CE0] text-white shadow-sm">
-                  <Zap className="w-2.5 h-2.5" /> High Impact
-                </span>
-              )}
             </h3>
           </div>
         </div>
@@ -199,42 +170,20 @@ const InteractiveSkillCard: React.FC<{
       </div>
 
       {/* Skills Badges Pill Grid */}
-      <div className={`flex flex-wrap gap-2.5 sm:gap-3 ${isAIGroup ? 'grid grid-cols-1 sm:grid-cols-2' : ''}`}>
+      <div className="flex flex-wrap gap-2.5 sm:gap-3">
         {group.skills.map((skill) => (
           <motion.div
             key={skill.name}
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.98 }}
-            className={`relative flex items-center justify-between rounded-2xl cursor-default transition-all duration-200 ${
-              skill.isAI
-                ? 'p-4 bg-gradient-to-r from-[#2a1338]/80 to-[#1e0e29]/80 border border-[#E8B4E0]/40 hover:border-[#FFD9EC] shadow-[0_0_20px_rgba(183,108,224,0.2)]'
-                : 'px-4 py-2.5 bg-[#1a1a22]/70 border border-[#F3D9F0]/15 hover:border-[#F3D9F0]/40 hover:bg-[#22222c]'
-            }`}
+            className="relative flex items-center px-4 py-2.5 rounded-2xl cursor-default transition-all duration-200 bg-[#1a1a22]/70 border border-[#F3D9F0]/15 hover:border-[#F3D9F0]/40 hover:bg-[#22222c]"
           >
             <div className="flex items-center gap-2.5">
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  skill.isAI
-                    ? 'bg-[#FFD9EC] shadow-[0_0_8px_#FFD9EC]'
-                    : 'bg-[#C9A7FF]/80 group-hover:bg-[#FFD9EC]'
-                }`}
-              />
-              <span
-                className={`font-medium tracking-wide ${
-                  skill.isAI
-                    ? 'text-white text-base sm:text-lg font-semibold'
-                    : 'text-[#F3D9F0] text-sm sm:text-base font-normal'
-                }`}
-              >
+              <span className="w-2 h-2 rounded-full bg-[#C9A7FF]/80 group-hover:bg-[#FFD9EC]" />
+              <span className="text-[#F3D9F0] text-sm sm:text-base font-normal tracking-wide">
                 {skill.name}
               </span>
             </div>
-
-            {skill.description && (
-              <span className="text-xs text-[#F3D9F0]/60 font-light hidden sm:inline-block pl-3">
-                {skill.description}
-              </span>
-            )}
           </motion.div>
         ))}
       </div>
@@ -295,8 +244,8 @@ const SkillsSection: React.FC = () => {
           </FadeIn>
         </div>
 
-        {/* Primary Interactive Skills Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 mb-16 sm:mb-20">
+        {/* Primary Interactive Skills Grid (Balanced 6-card grid) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-16 sm:mb-20">
           {mainSkillGroups.map((group, index) => (
             <InteractiveSkillCard key={group.id} group={group} index={index} />
           ))}

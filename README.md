@@ -1,100 +1,155 @@
-# Srilakshmi — Full-Stack Portfolio
+# Personal Portfolio Website
 
-A full-stack personal portfolio built to showcase my projects, skills, and achievements — with a real backend and database behind the contact form, not just a static frontend.
+A full-stack personal portfolio website built to showcase my projects, technical skills, achievements, leadership experience, and contact information.
 
-**Live site:** my-portfolio-weld-tau-cmq5sgg2rx.vercel.app
-**Backend API:** myportfolio-production-cb40.up.railway.app 
+The project demonstrates the integration of a modern React frontend with a Node.js/Express backend and a MySQL database, along with deployment of the complete application using Vercel and Railway.
 
----
+## Live Demo
+
+**Frontend:**
+https://my-portfolio-weld-tau-cmq5sgg2rx.vercel.app
+
+**Backend API:**
+https://myportfolio-production-cb40.up.railway.app
+
+## Project Overview
+
+This portfolio was developed as a full-stack web application rather than a static portfolio. It includes a responsive React frontend, a RESTful Express backend, and a MySQL database for persistent data storage.
+
+The application demonstrates:
+
+* Frontend development using React and TypeScript
+* Responsive UI design using Tailwind CSS
+* REST API development using Node.js and Express.js
+* MySQL database integration
+* Backend input validation
+* Environment-based configuration
+* CORS configuration
+* Production deployment
+* Frontend, backend, and database integration
 
 ## Tech Stack
 
-**Frontend**
-- React + TypeScript
-- Tailwind CSS
-- Framer Motion (scroll animations, sticky project cards, magnetic hover effects)
-- Vite
+### Frontend
 
-**Backend**
-- Node.js + Express.js
-- REST API (`/api/contact`, `/api/health`)
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
+* Framer Motion
 
-**Database**
-- MySQL (via `mysql2`)
-- Stores contact form submissions in a `contact_messages` table
+### Backend
 
-**Deployment**
-- Frontend → Vercel
-- Backend → Railway
-- Database → Railway MySQL
+* Node.js
+* Express.js
+* REST API
+* mysql2
+* CORS
 
----
+### Database
+
+* MySQL
+* MySQL Workbench for local database management
+
+### Deployment
+
+* Vercel — Frontend
+* Railway — Backend
+* Railway MySQL — Production Database
 
 ## Features
 
-- Responsive, animated hero section with a scroll-following 3D avatar
-- Scrolling tech-stack marquee
-- Scroll-revealed About section with character-by-character text animation
-- Skills section grouped by category (Languages, Frontend, Backend & Database, IoT & Hardware)
-- Sticky-stacking Projects section showcasing real projects (IoT systems, hackathon builds, web apps)
-- Achievements & Leadership section
-- Working Contact form — submissions are validated on the backend and persisted to a production MySQL database
-- Full separation of local vs. production config via environment variables (no hardcoded secrets or URLs)
+### Portfolio Sections
 
----
+* Hero section with animated 3D avatar
+* About section
+* Technical skills organized by category
+* Projects showcase
+* Achievements and leadership section
+* Contact section
+* Responsive design for different screen sizes
+
+### Interactive UI
+
+* Scroll-based animations
+* Character-by-character text animations
+* Sticky project cards
+* Magnetic hover interactions
+* Animated technology stack
+* Responsive navigation and layouts
+
+### Contact System
+
+The portfolio includes a functional contact form connected to the backend.
+
+The flow is:
+
+```text
+User
+  |
+  v
+React Contact Form
+  |
+  v
+Express REST API
+  |
+  v
+Input Validation
+  |
+  v
+MySQL Database
+  |
+  v
+contact_messages
+```
+
+Contact submissions are stored in the production MySQL database.
 
 ## Project Structure
 
-```
+```text
 portfolio/
-├── src/                  # React frontend
-│   ├── sections/         # Hero, About, Skills, Projects, Achievements, Contact
-│   ├── components/       # Reusable UI (buttons, FadeIn, Magnet, AnimatedText)
-│   └── hooks/            # useApi.ts — handles local vs. production API base URL
-├── server/               # Express backend
-│   ├── index.js          # App entry point, CORS, health check
-│   ├── db.js             # MySQL connection pool (env-variable driven)
+│
+├── src/
+│   ├── sections/
+│   │   ├── Hero/
+│   │   ├── About/
+│   │   ├── Skills/
+│   │   ├── Projects/
+│   │   ├── Achievements/
+│   │   └── Contact/
+│   │
+│   ├── components/
+│   │   ├── FadeIn/
+│   │   ├── Magnet/
+│   │   ├── AnimatedText/
+│   │   └── ...
+│   │
+│   └── hooks/
+│       └── useApi.ts
+│
+├── server/
+│   ├── index.js
+│   ├── db.js
 │   ├── routes/
-│   │   └── contact.js    # POST /api/contact
-│   └── package.json
-├── package.json          # Frontend package.json
-└── vite.config.ts
+│   │   └── contact.js
+│   ├── package.json
+│   └── .env.example
+│
+├── package.json
+├── vite.config.ts
+├── .gitignore
+└── README.md
 ```
 
----
+## Database
 
-## Running Locally
+The application uses MySQL for persistent storage.
 
-**1. Clone the repo**
-```bash
-git clone <your-repo-url>
-cd portfolio
-```
+The production database contains a `contact_messages` table used to store contact form submissions.
 
-**2. Frontend setup**
-```bash
-npm install
-npm run dev
-```
-Runs at `http://localhost:5173`
+### Table Structure
 
-**3. Backend setup**
-```bash
-cd server
-npm install
-```
-
-Create a `server/.env` file (see `server/.env.example`):
-```env
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=your_local_mysql_password
-DB_NAME=portfolio_db
-FRONTEND_URL=http://localhost:5173
-```
-
-Create the database table:
 ```sql
 CREATE TABLE contact_messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -105,57 +160,234 @@ CREATE TABLE contact_messages (
 );
 ```
 
-Start the backend:
+## API Endpoints
+
+| Method | Endpoint       | Description                                    |
+| ------ | -------------- | ---------------------------------------------- |
+| GET    | `/api/health`  | Checks whether the backend is running          |
+| POST   | `/api/contact` | Validates and stores a contact form submission |
+
+### Contact Request
+
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "message": "Hello!"
+}
+```
+
+### Health Check Response
+
+```json
+{
+  "status": "ok",
+  "service": "portfolio-backend"
+}
+```
+
+## Running the Project Locally
+
+### Prerequisites
+
+Make sure the following are installed:
+
+* Node.js
+* npm
+* MySQL
+* Git
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Sri-1212/my_portfolio.git
+cd my_portfolio
+```
+
+### 2. Install Frontend Dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure the Backend
+
+Navigate to the server directory:
+
+```bash
+cd server
+npm install
+```
+
+Create a `.env` file inside the `server` directory.
+
+Use `.env.example` as a reference:
+
+```env
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_local_mysql_password
+DB_NAME=portfolio_db
+FRONTEND_URL=http://localhost:5173
+```
+
+Do not commit the `.env` file to GitHub.
+
+### 4. Create the Database
+
+Create the database in MySQL:
+
+```sql
+CREATE DATABASE portfolio_db;
+```
+
+Then create the contact messages table:
+
+```sql
+CREATE TABLE contact_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 5. Start the Backend
+
+From the `server` directory:
+
 ```bash
 npm start
 ```
-Runs at `http://localhost:5000`
 
----
+The backend will run on:
+
+```text
+http://localhost:5000
+```
+
+### 6. Start the Frontend
+
+Open another terminal and navigate to the project root:
+
+```bash
+cd my_portfolio
+npm run dev
+```
+
+The frontend will run on:
+
+```text
+http://localhost:5173
+```
 
 ## Environment Variables
 
-**Frontend** (`.env`, used only in production builds)
+### Backend
+
+| Variable       | Description                                       |
+| -------------- | ------------------------------------------------- |
+| `DB_HOST`      | MySQL database host                               |
+| `DB_PORT`      | MySQL database port                               |
+| `DB_USER`      | MySQL username                                    |
+| `DB_PASSWORD`  | MySQL password                                    |
+| `DB_NAME`      | MySQL database name                               |
+| `FRONTEND_URL` | Frontend origin allowed by CORS                   |
+| `PORT`         | Server port; provided automatically in production |
+
+### Frontend
+
+The production frontend uses:
+
 ```env
-VITE_API_URL=https://your-backend.up.railway.app
+VITE_API_URL=your_backend_url
 ```
-Not required locally — the Vite dev server proxies `/api` requests to `localhost:5000` automatically.
 
-**Backend** (`server/.env`)
-| Variable | Description |
-|---|---|
-| `DB_HOST` | MySQL host |
-| `DB_PORT` | MySQL port |
-| `DB_USER` | MySQL user |
-| `DB_PASSWORD` | MySQL password |
-| `DB_NAME` | MySQL database name |
-| `FRONTEND_URL` | Allowed CORS origin (frontend URL) |
-| `PORT` | Set automatically by the hosting platform in production |
+The actual production environment variable is configured through the Vercel deployment settings.
 
----
+## Deployment
 
-## API Endpoints
+### Frontend
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/health` | Health check — returns `{ status: "ok", service: "portfolio-backend" }` |
-| `POST` | `/api/contact` | Accepts `{ name, email, message }`, validates input, and stores it in `contact_messages` |
+The React frontend is deployed on Vercel.
 
----
+The frontend communicates with the production Express API using the `VITE_API_URL` environment variable.
 
-## Deployment Notes
+### Backend
 
-- Frontend is deployed on **Vercel**, with `VITE_API_URL` set as an environment variable pointing to the live backend.
-- Backend is deployed on **Railway**, configured to:
-  - Bind to `0.0.0.0` and use Railway's dynamic `PORT`
-  - Read all database credentials from environment variables (no secrets committed to the repo)
-  - Restrict CORS to the deployed frontend's URL only
-- Database is a **Railway MySQL** service, kept separate from the local development database.
+The Express backend is deployed on Railway.
 
----
+The backend:
+
+* Uses Railway's dynamically assigned `PORT`
+* Connects to the production MySQL database using environment variables
+* Uses CORS to allow requests from the deployed frontend
+* Keeps database credentials outside the source code
+
+### Database
+
+The production MySQL database is hosted on Railway and is separate from the local development database.
+
+The production database stores contact form submissions received through the deployed application.
+
+## Production Architecture
+
+```text
+                         User
+                           |
+                           v
+                React + TypeScript
+                       Vercel
+                           |
+                           | HTTPS / REST API
+                           v
+                  Node.js + Express
+                       Railway
+                           |
+                           | mysql2
+                           v
+                    Railway MySQL
+                           |
+                           v
+                  contact_messages
+```
+
+## Security and Configuration
+
+The project follows environment-based configuration for sensitive information.
+
+* Database credentials are stored in environment variables.
+* Local `.env` files are excluded from version control.
+* Production database credentials are managed through Railway environment variables.
+* The frontend and backend use separate deployment environments.
+* CORS is configured to allow requests from the deployed frontend.
+
+## Learning Outcomes
+
+This project provided practical experience in:
+
+* Building a full-stack web application
+* Developing REST APIs with Express.js
+* Connecting Node.js applications to MySQL
+* Designing and using database tables
+* Handling form submissions and backend validation
+* Managing environment variables
+* Configuring CORS
+* Deploying frontend applications to Vercel
+* Deploying backend applications and databases to Railway
+* Connecting independently deployed frontend, backend, and database services
 
 ## Author
 
 **Srilakshmi**
-B.Tech Computer Science Engineering, BMS Institute of Technology & Management
-[GitHub](https://github.com/Sri-1212) · [LinkedIn](https://www.linkedin.com/in/srilakshmi-)
+
+B.Tech Computer Science Engineering
+BMS Institute of Technology & Management
+
+**GitHub:**
+https://github.com/Sri-1212
+
+**LinkedIn:**
+https://www.linkedin.com/in/srilakshmi-

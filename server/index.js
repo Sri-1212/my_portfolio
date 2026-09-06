@@ -14,40 +14,49 @@ const PORT = parseInt(process.env.PORT || '5000', 10);
 const HOST = '0.0.0.0';
 
 // Configure CORS
-const allowedOrigins = [
+const defaultOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
 ];
 
-if (process.env.FRONTEND_URL) {
-  // Support single URL or comma-separated URLs, stripping any trailing slash
-  const customOrigins = process.env.FRONTEND_URL
-    .split(',')
-    .map((url) => url.trim().replace(/\/+$/, ''))
-    .filter(Boolean);
-  allowedOrigins.push(...customOrigins);
-}
+const rawFrontendUrls = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : [];
+const allowedOrigins = [
+  ...defaultOrigins,
+  ...rawFrontendUrls,
+]
+  .map((url) => url.trim().replace(/^["']|["']$/g, '').replace(/\/+$/, ''))
+  .filter(Boolean);
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, uptime/health probes, same-origin)
-      if (!origin) return callback(null, true);
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g. mobile apps, curl, uptime/health probes, same-origin)
+    if (!origin) {
+      return callback(null, true);
+    }
 
-      const normalizedOrigin = origin.replace(/\/+$/, '');
-      if (allowedOrigins.includes(normalizedOrigin)) {
-        return callback(null, true);
-      }
+    const normalizedOrigin = origin.trim().replace(/\/+$/, '').toLowerCase();
+    const isAllowed = allowedOrigins.some(
+      (allowed) => allowed.toLowerCase() === normalizedOrigin
+    );
 
-      return callback(new Error(`CORS policy does not allow access from origin: ${origin}`));
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-  })
-);
+    if (isAllowed) {
+      return callback(null, true);
+    }
+
+    // Reject disallowed origin gracefully without throwing an unhandled Error
+    return callback(null, false);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
 
 // Middleware
 app.use(express.json());

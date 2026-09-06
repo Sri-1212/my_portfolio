@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FadeIn from '../components/FadeIn';
 import {
-  Mail,
-  Phone,
   MapPin,
   Copy,
   Check,
@@ -11,6 +9,10 @@ import {
   ArrowUp,
   Send,
   Clock,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  Sparkles,
 } from 'lucide-react';
 
 const LinkedInIcon: React.FC<{ className?: string }> = ({ className = 'w-5 h-5' }) => (
@@ -40,25 +42,42 @@ const socialLinks = [
     href: 'https://github.com/Sri-1212',
     color: '#C9A7FF',
   },
-  {
-    icon: Mail,
-    title: 'Email Direct',
-    subtitle: 'dsrilakshmi573@gmail.com',
-    href: 'mailto:dsrilakshmi573@gmail.com',
-    color: '#FFB6D9',
-  },
-  {
-    icon: Phone,
-    title: 'Phone / WhatsApp',
-    subtitle: '+91 7676825610',
-    href: 'tel:+917676825610',
-    color: '#25D366',
-  },
 ];
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const ContactFooter: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const email = 'dsrilakshmi573@gmail.com';
+
+  // Form State
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: '',
+  });
+
+  const [errors, setErrors] = useState<{
+    name?: string;
+    email?: string;
+    message?: string;
+  }>({});
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
+
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (successTimerRef.current) {
+        clearTimeout(successTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleCopyEmail = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -69,6 +88,102 @@ const ContactFooter: React.FC = () => {
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear specific field error when typing
+    if (errors[name as keyof typeof errors]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors: { name?: string; email?: string; message?: string } = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Your name is required.';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Your email is required.';
+    } else if (!EMAIL_REGEX.test(formData.email.trim())) {
+      newErrors.email = 'Please provide a valid email address.';
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = 'Your message is required.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatusMessage(null);
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const rawApiUrl = import.meta.env.VITE_API_URL || '';
+    const apiBase = rawApiUrl.replace(/\/+$/, '');
+
+    try {
+      const response = await fetch(`${apiBase}/api/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          message: formData.message.trim(),
+        }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (response.ok && data?.success) {
+        setStatusMessage({
+          type: 'success',
+          text: 'Message sent successfully!',
+        });
+        // Clear the form
+        setFormData({
+          name: '',
+          email: '',
+          message: '',
+        });
+        setErrors({});
+
+        // Automatically hide success message after 5 seconds
+        if (successTimerRef.current) {
+          clearTimeout(successTimerRef.current);
+        }
+        successTimerRef.current = setTimeout(() => {
+          setStatusMessage((prev) => (prev?.type === 'success' ? null : prev));
+        }, 5000);
+      } else {
+        setStatusMessage({
+          type: 'error',
+          text: data?.message || 'Something went wrong. Please try again.',
+        });
+      }
+    } catch {
+      setStatusMessage({
+        type: 'error',
+        text: 'Something went wrong. Please try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -163,7 +278,7 @@ const ContactFooter: React.FC = () => {
       />
 
       {/* ── Main Container ── */}
-      <div className="max-w-5xl mx-auto relative z-10">
+      <div className="max-w-6xl mx-auto relative z-10">
         {/* Status Pill */}
         <div className="flex justify-center mb-6 sm:mb-8">
           <FadeIn delay={0} y={20}>
@@ -173,7 +288,7 @@ const ContactFooter: React.FC = () => {
                 <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-[#22c55e]" />
               </span>
               <span className="text-[11px] sm:text-xs uppercase tracking-wider text-[#dcfce7] font-medium">
-                Available for New Roles & Projects
+                Available for New Roles &amp; Projects
               </span>
             </div>
           </FadeIn>
@@ -197,19 +312,22 @@ const ContactFooter: React.FC = () => {
           </FadeIn>
         </div>
 
-        {/* ── Featured Contact Card (Hero Interactive Box) ── */}
-        <FadeIn delay={0.3} y={30} className="mb-12 sm:mb-20">
-          <div className="relative rounded-3xl p-6 sm:p-10 md:p-12 bg-gradient-to-b from-[#16151f]/90 to-[#0e0d14]/90 border border-[#F3D9F0]/25 shadow-[0_12px_40px_rgba(0,0,0,0.5),0_0_30px_rgba(193,53,132,0.12)] backdrop-blur-xl">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
-              {/* Left Info */}
-              <div className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-auto">
+        {/* ── 2-Column Layout: Direct Details (Left) + Contact Form (Right) ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-10 mb-16 sm:mb-24 items-start">
+          {/* Left Column: Direct Info & Social Channels */}
+          <div className="lg:col-span-5 flex flex-col gap-5 sm:gap-6">
+            <FadeIn delay={0.3} y={25}>
+              <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-b from-[#16151f]/90 to-[#0e0d14]/90 border border-[#F3D9F0]/20 shadow-[0_12px_40px_rgba(0,0,0,0.45),0_0_25px_rgba(193,53,132,0.1)] backdrop-blur-xl">
                 <div className="flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-widest text-[#FFD9EC]/70 font-semibold mb-2">
+                  <Sparkles className="w-3.5 h-3.5 text-[#FFB6D9]" />
                   <span>Direct Communication</span>
                 </div>
-                <h3 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl font-black text-white mb-2 tracking-tight break-all sm:break-normal">
+
+                <h3 className="text-lg sm:text-2xl font-black text-white mb-2 tracking-tight break-all">
                   {email}
                 </h3>
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 sm:gap-4 text-xs sm:text-sm text-[#F3D9F0]/60 mt-1">
+
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-[#F3D9F0]/60 mt-2 mb-6">
                   <span className="flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-[#C9A7FF]" />
                     Bengaluru, India
@@ -220,92 +338,255 @@ const ContactFooter: React.FC = () => {
                     IST (UTC+5:30)
                   </span>
                 </div>
-              </div>
 
-              {/* Right Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full md:w-auto">
-                <button
-                  type="button"
-                  onClick={handleCopyEmail}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:py-3.5 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wider transition-all duration-300 bg-[#1e1d29] hover:bg-[#282736] border border-[#F3D9F0]/25 text-[#F3D9F0] hover:scale-105 active:scale-95 shadow-md min-w-[140px]"
-                >
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleCopyEmail}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-300 bg-[#1e1d29] hover:bg-[#282736] border border-[#F3D9F0]/25 text-[#F3D9F0] hover:scale-105 active:scale-95 shadow-md cursor-pointer"
+                  >
+                    <AnimatePresence mode="wait">
+                      {copied ? (
+                        <motion.div
+                          key="copied"
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          className="flex items-center gap-1.5 text-emerald-400"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Copied!</span>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="copy"
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          className="flex items-center gap-1.5"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                          <span>Copy Email</span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </button>
+
+                  <a
+                    href={`mailto:${email}`}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-full text-xs font-bold uppercase tracking-wider text-white transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(193,53,132,0.4)]"
+                    style={{
+                      background: 'linear-gradient(135deg, #6B1170 0%, #C13584 45%, #9333EA 100%)',
+                      border: '1px solid rgba(243, 217, 240, 0.5)',
+                    }}
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Send Email</span>
+                  </a>
+                </div>
+              </div>
+            </FadeIn>
+
+            {/* Social channels */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {socialLinks.map((link, idx) => {
+                const Icon = link.icon;
+                return (
+                  <FadeIn key={link.title} delay={0.35 + idx * 0.06} y={15}>
+                    <a
+                      href={link.href}
+                      target={link.href.startsWith('http') ? '_blank' : undefined}
+                      rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                      className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-[#121217]/70 border border-[#F3D9F0]/15 hover:border-[#F3D9F0]/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_6px_20px_rgba(193,53,132,0.15)] backdrop-blur-md"
+                    >
+                      <div className="flex items-center gap-2.5 sm:gap-3">
+                        <div
+                          className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center bg-[#1a1924] border border-[#F3D9F0]/20 text-[#F3D9F0] group-hover:scale-110 group-hover:text-white transition-all duration-300"
+                        >
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <h4 className="text-white font-medium text-xs sm:text-sm group-hover:text-[#FFD9EC] transition-colors">
+                            {link.title}
+                          </h4>
+                          <p className="text-[#F3D9F0]/50 text-[11px] font-light truncate max-w-[100px]">
+                            {link.subtitle}
+                          </p>
+                        </div>
+                      </div>
+                      <ArrowUpRight className="w-3.5 h-3.5 text-[#F3D9F0]/40 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200" />
+                    </a>
+                  </FadeIn>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right Column: Contact Form */}
+          <div className="lg:col-span-7">
+            <FadeIn delay={0.3} y={25}>
+              <div id="contact-form" className="rounded-3xl p-6 sm:p-8 md:p-10 bg-gradient-to-b from-[#16151f]/95 to-[#0e0d14]/95 border border-[#F3D9F0]/25 shadow-[0_12px_45px_rgba(0,0,0,0.5),0_0_35px_rgba(193,53,132,0.15)] backdrop-blur-xl">
+                <div className="flex items-center justify-between gap-3 mb-6">
+                  <div>
+                    <span className="inline-block text-[10px] sm:text-xs uppercase tracking-widest text-[#FFD9EC]/70 font-semibold mb-1">
+                      Direct Message
+                    </span>
+                    <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight">
+                      Send a Message
+                    </h3>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
+                    <Send className="w-4 h-4" />
+                  </div>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5" noValidate>
+                  {/* Status feedback message */}
                   <AnimatePresence mode="wait">
-                    {copied ? (
+                    {statusMessage && (
                       <motion.div
-                        key="copied"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        className="flex items-center gap-2 text-emerald-400"
+                        key={statusMessage.type + statusMessage.text}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                        className={`p-3.5 sm:p-4 rounded-2xl flex items-center gap-3 border ${
+                          statusMessage.type === 'success'
+                            ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
+                            : 'bg-rose-950/40 border-rose-500/40 text-rose-300'
+                        }`}
                       >
-                        <Check className="w-4 h-4" />
-                        <span>Copied!</span>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="copy"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        className="flex items-center gap-2"
-                      >
-                        <Copy className="w-4 h-4" />
-                        <span>Copy Email</span>
+                        {statusMessage.type === 'success' ? (
+                          <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-400" />
+                        ) : (
+                          <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-400" />
+                        )}
+                        <span className="text-xs sm:text-sm font-medium">
+                          {statusMessage.text}
+                        </span>
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </button>
 
-                <a
-                  href={`mailto:${email}`}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3 sm:py-3.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider text-white transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(193,53,132,0.4)]"
-                  style={{
-                    background: 'linear-gradient(135deg, #6B1170 0%, #C13584 45%, #9333EA 100%)',
-                    border: '1px solid rgba(243, 217, 240, 0.5)',
-                  }}
-                >
-                  <Send className="w-4 h-4" />
-                  <span>Send Email</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </FadeIn>
-
-        {/* ── Social / Channels Grid ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5 mb-12 sm:mb-20">
-          {socialLinks.map((link, idx) => {
-            const Icon = link.icon;
-            return (
-              <FadeIn key={link.title} delay={0.4 + idx * 0.08} y={20}>
-                <a
-                  href={link.href}
-                  target={link.href.startsWith('http') ? '_blank' : undefined}
-                  rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  className="group relative flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-[#121217]/70 border border-[#F3D9F0]/15 hover:border-[#F3D9F0]/40 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_8px_25px_rgba(193,53,132,0.15)] backdrop-blur-md"
-                >
-                  <div className="flex items-center gap-3 sm:gap-3.5">
-                    <div
-                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-[#1a1924] border border-[#F3D9F0]/20 text-[#F3D9F0] group-hover:scale-110 group-hover:text-white transition-all duration-300"
+                  {/* Name input */}
+                  <div>
+                    <label
+                      htmlFor="contact-name"
+                      className="block text-xs uppercase tracking-wider text-[#F3D9F0]/80 font-medium mb-1.5"
                     >
-                      <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </div>
-                    <div>
-                      <h4 className="text-white font-medium text-sm sm:text-base group-hover:text-[#FFD9EC] transition-colors">
-                        {link.title}
-                      </h4>
-                      <p className="text-[#F3D9F0]/50 text-xs font-light tracking-wide truncate max-w-[120px]">
-                        {link.subtitle}
+                      Your Name <span className="text-[#FFB6D9]">*</span>
+                    </label>
+                    <input
+                      id="contact-name"
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      placeholder="e.g. Test User"
+                      disabled={isSubmitting}
+                      className={`w-full px-4 py-3 sm:py-3.5 rounded-2xl bg-[#09090C]/80 border text-sm text-white placeholder-[#F3D9F0]/30 transition-all duration-200 focus:outline-none focus:ring-2 disabled:opacity-50 ${
+                        errors.name
+                          ? 'border-rose-500/70 focus:border-rose-500 focus:ring-rose-500/20'
+                          : 'border-[#F3D9F0]/20 focus:border-[#C13584] focus:ring-[#C13584]/20'
+                      }`}
+                    />
+                    {errors.name && (
+                      <p className="text-rose-400 text-xs mt-1 font-normal flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {errors.name}
                       </p>
-                    </div>
+                    )}
                   </div>
-                  <div className="text-[#F3D9F0]/40 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200">
-                    <ArrowUpRight className="w-4 h-4" />
+
+                  {/* Email input */}
+                  <div>
+                    <label
+                      htmlFor="contact-email"
+                      className="block text-xs uppercase tracking-wider text-[#F3D9F0]/80 font-medium mb-1.5"
+                    >
+                      Your Email <span className="text-[#FFB6D9]">*</span>
+                    </label>
+                    <input
+                      id="contact-email"
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="e.g. test@example.com"
+                      disabled={isSubmitting}
+                      className={`w-full px-4 py-3 sm:py-3.5 rounded-2xl bg-[#09090C]/80 border text-sm text-white placeholder-[#F3D9F0]/30 transition-all duration-200 focus:outline-none focus:ring-2 disabled:opacity-50 ${
+                        errors.email
+                          ? 'border-rose-500/70 focus:border-rose-500 focus:ring-rose-500/20'
+                          : 'border-[#F3D9F0]/20 focus:border-[#C13584] focus:ring-[#C13584]/20'
+                      }`}
+                    />
+                    {errors.email && (
+                      <p className="text-rose-400 text-xs mt-1 font-normal flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {errors.email}
+                      </p>
+                    )}
                   </div>
-                </a>
-              </FadeIn>
-            );
-          })}
+
+                  {/* Message textarea */}
+                  <div>
+                    <label
+                      htmlFor="contact-message"
+                      className="block text-xs uppercase tracking-wider text-[#F3D9F0]/80 font-medium mb-1.5"
+                    >
+                      Your Message <span className="text-[#FFB6D9]">*</span>
+                    </label>
+                    <textarea
+                      id="contact-message"
+                      name="message"
+                      rows={4}
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      placeholder="Write your message here..."
+                      disabled={isSubmitting}
+                      className={`w-full px-4 py-3 sm:py-3.5 rounded-2xl bg-[#09090C]/80 border text-sm text-white placeholder-[#F3D9F0]/30 transition-all duration-200 focus:outline-none focus:ring-2 disabled:opacity-50 resize-none ${
+                        errors.message
+                          ? 'border-rose-500/70 focus:border-rose-500 focus:ring-rose-500/20'
+                          : 'border-[#F3D9F0]/20 focus:border-[#C13584] focus:ring-[#C13584]/20'
+                      }`}
+                    />
+                    {errors.message && (
+                      <p className="text-rose-400 text-xs mt-1 font-normal flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {errors.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full inline-flex items-center justify-center gap-2.5 px-8 py-3.5 sm:py-4 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider text-white transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_25px_rgba(193,53,132,0.4)] cursor-pointer"
+                      style={{
+                        background:
+                          'linear-gradient(135deg, #6B1170 0%, #C13584 45%, #9333EA 100%)',
+                        border: '1px solid rgba(243, 217, 240, 0.5)',
+                      }}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Sending Message...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>SEND MESSAGE</span>
+                          <Send className="w-4 h-4" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </FadeIn>
+          </div>
         </div>
 
         {/* ── Footer Bottom Row (Copyright & Back-to-Top) ── */}
@@ -314,7 +595,7 @@ const ContactFooter: React.FC = () => {
             <div>
               <p className="text-[#F3D9F0]/70 font-normal text-xs sm:text-sm">
                 © {new Date().getFullYear()}{' '}
-                <span className="text-white font-semibold">Srilakshmi</span>. Crafted with passion & code.
+                <span className="text-white font-semibold">Srilakshmi</span>. Crafted with passion &amp; code.
               </p>
               <p className="text-[#F3D9F0]/40 text-xs mt-0.5 sm:mt-1">
                 Full-Stack Developer • Bengaluru, India
@@ -325,7 +606,7 @@ const ContactFooter: React.FC = () => {
               <button
                 type="button"
                 onClick={scrollToTop}
-                className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#F3D9F0]/20 bg-[#14131c] hover:bg-[#1f1e2c] text-[#F3D9F0]/80 hover:text-white text-xs uppercase tracking-wider transition-all duration-300 hover:scale-105"
+                className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#F3D9F0]/20 bg-[#14131c] hover:bg-[#1f1e2c] text-[#F3D9F0]/80 hover:text-white text-xs uppercase tracking-wider transition-all duration-300 hover:scale-105 cursor-pointer"
               >
                 <span>Back to top</span>
                 <ArrowUp className="w-3.5 h-3.5" />
@@ -339,4 +620,3 @@ const ContactFooter: React.FC = () => {
 };
 
 export default ContactFooter;
-

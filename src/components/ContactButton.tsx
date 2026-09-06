@@ -5,15 +5,34 @@ interface ContactButtonProps {
 }
 
 const ContactButton: React.FC<ContactButtonProps> = ({ className = '' }) => {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const targetElement =
+      document.getElementById('contact-form') || document.getElementById('contact');
+
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Focus name input for immediate accessibility
+      const nameInput = document.getElementById('contact-name');
+      if (nameInput) {
+        setTimeout(() => {
+          nameInput.focus();
+        }, 600);
+      }
+    }
+  };
+
   return (
     <a
-      href="mailto:dsrilakshmi573@gmail.com"
+      href="#contact-form"
+      onClick={handleClick}
       className={`
         inline-block rounded-full
         px-8 py-3 sm:px-10 sm:py-3.5 md:px-12 md:py-4
         text-xs sm:text-sm md:text-base
         text-white font-medium uppercase tracking-widest
         transition-transform duration-200 hover:scale-105
+        cursor-pointer
         ${className}
       `}
       style={{

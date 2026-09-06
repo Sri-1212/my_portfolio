@@ -12,7 +12,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({ text, className = '', style
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start 0.85', 'end 0.35'],
+    offset: ['start 0.92', 'end 0.3'],
   });
 
   const words = text.split(' ').filter(Boolean);
@@ -45,11 +45,11 @@ const AnimatedWord: React.FC<AnimatedWordProps> = ({
   total,
   scrollYProgress,
 }) => {
-  const start = (index / total) * 0.85;
-  const end = Math.min(1, start + (1 / total) * 2.5);
+  const start = (index / total) * 0.75;
+  const end = Math.min(1, start + (1 / total) * 3);
 
-  const opacity = useTransform(scrollYProgress, [start, end], [0.45, 1]);
-  const color = useTransform(scrollYProgress, [start, end], ['#71767B', '#FFFFFF']);
+  const opacity = useTransform(scrollYProgress, [start, end], [0.72, 1]);
+  const color = useTransform(scrollYProgress, [start, end], ['#E2D5E6', '#FFFFFF']);
 
   return (
     <motion.span
@@ -62,5 +62,6 @@ const AnimatedWord: React.FC<AnimatedWordProps> = ({
 };
 
 export default AnimatedText;
+
 
 

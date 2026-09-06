@@ -1,4 +1,5 @@
 import React from 'react';
+import Navbar from './components/Navbar';
 import HeroSection from './sections/HeroSection';
 import MarqueeSection from './sections/MarqueeSection';
 import AboutSection from './sections/AboutSection';
@@ -23,6 +24,7 @@ const App: React.FC = () => {
 
   return (
     <main className="font-kanit" style={{ overflowX: 'clip' }}>
+      <Navbar />
       <HeroSection />
       <MarqueeSection />
       <AboutSection />

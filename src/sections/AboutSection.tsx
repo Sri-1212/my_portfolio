@@ -16,7 +16,7 @@ const AboutSection: React.FC = () => {
   return (
     <section
       id="about"
-      className="relative px-5 sm:px-8 md:px-12 lg:px-20 py-28 sm:py-36 md:py-44 font-kanit"
+      className="relative px-6 sm:px-10 md:px-16 lg:px-24 py-32 sm:py-44 md:py-56 lg:py-64 font-kanit"
       style={{ background: '#0A0A0A', overflowX: 'clip' }}
     >
       {/* ── Ambient background glows ── */}
@@ -45,8 +45,8 @@ const AboutSection: React.FC = () => {
         src="/decor-crystal.png"
         alt=""
         aria-hidden="true"
-        className="absolute pointer-events-none select-none"
-        style={{ top: '3%', left: '2%', width: 'clamp(90px, 14vw, 210px)', opacity: 0.75 }}
+        className="absolute pointer-events-none select-none opacity-40 sm:opacity-75"
+        style={{ top: '2%', left: '1%', width: 'clamp(55px, 12vw, 190px)' }}
         animate={{ y: [0, -14, 0], rotate: [0, 3, 0] }}
         transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
       />
@@ -56,8 +56,8 @@ const AboutSection: React.FC = () => {
         src="/decor-flower.png"
         alt=""
         aria-hidden="true"
-        className="absolute pointer-events-none select-none"
-        style={{ top: '4%', right: '2%', width: 'clamp(85px, 13vw, 200px)', opacity: 0.75 }}
+        className="absolute pointer-events-none select-none opacity-40 sm:opacity-75"
+        style={{ top: '3%', right: '1%', width: 'clamp(50px, 11vw, 180px)' }}
         animate={{ y: [0, 16, 0], rotate: [0, -4, 0] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
       />
@@ -67,8 +67,8 @@ const AboutSection: React.FC = () => {
         src="/decor-orb.png"
         alt=""
         aria-hidden="true"
-        className="absolute pointer-events-none select-none"
-        style={{ bottom: '4%', left: '4%', width: 'clamp(80px, 12vw, 185px)', opacity: 0.7 }}
+        className="absolute pointer-events-none select-none opacity-30 sm:opacity-70"
+        style={{ bottom: '3%', left: '2%', width: 'clamp(45px, 10vw, 160px)' }}
         animate={{ y: [0, 13, 0], rotate: [0, 5, 0] }}
         transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
       />
@@ -78,8 +78,8 @@ const AboutSection: React.FC = () => {
         src="/decor-gem.png"
         alt=""
         aria-hidden="true"
-        className="absolute pointer-events-none select-none"
-        style={{ bottom: '5%', right: '3%', width: 'clamp(95px, 14vw, 210px)', opacity: 0.75 }}
+        className="absolute pointer-events-none select-none opacity-40 sm:opacity-75"
+        style={{ bottom: '4%', right: '2%', width: 'clamp(55px, 12vw, 190px)' }}
         animate={{ y: [0, -13, 0], rotate: [0, -4, 0] }}
         transition={{ duration: 8.5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
       />
@@ -87,16 +87,16 @@ const AboutSection: React.FC = () => {
       {/* ── Main Content ── */}
       <div className="relative z-10 max-w-7xl mx-auto">
         <div
-          className="flex flex-col lg:flex-row items-center lg:items-center gap-14 lg:gap-20"
+          className="flex flex-col lg:flex-row items-center lg:items-center gap-16 sm:gap-20 lg:gap-32"
         >
           {/* ──── LEFT: Text Content ──── */}
-          <div className="flex-1 min-w-0 flex flex-col items-start">
+          <div className="flex-1 min-w-0 flex flex-col items-start w-full">
             {/* Display heading */}
             <FadeIn delay={0} y={30}>
               <h2
-                className="hero-heading font-black uppercase leading-[0.92] mb-8 sm:mb-10"
+                className="hero-heading font-black uppercase leading-[0.92] mb-8 sm:mb-12 md:mb-14"
                 style={{
-                  fontSize: 'clamp(3.2rem, 7.5vw, 92px)',
+                  fontSize: 'clamp(2.8rem, 7.5vw, 92px)',
                   letterSpacing: '-0.02em',
                 }}
               >
@@ -108,20 +108,20 @@ const AboutSection: React.FC = () => {
             <div className="max-w-2xl w-full">
               <AnimatedText
                 text={bodyText}
-                className="font-normal leading-[1.68] tracking-normal text-left"
-                style={{ fontSize: 'clamp(16px, 1.15vw, 19px)' }}
+                className="font-normal leading-[1.8] sm:leading-[1.95] tracking-normal text-left"
+                style={{ fontSize: 'clamp(15.5px, 1.18vw, 19.5px)' }}
               />
             </div>
 
             {/* CTA button */}
-            <FadeIn delay={0.3} y={20} className="mt-10 sm:mt-12">
+            <FadeIn delay={0.3} y={20} className="mt-12 sm:mt-16 md:mt-20">
               <a
                 href="#contact"
-                className="inline-flex items-center justify-center rounded-full text-white font-bold uppercase transition-all duration-300 hover:scale-105 active:scale-95"
+                className="inline-flex items-center justify-center rounded-full text-white font-bold uppercase transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(193,53,132,0.35)]"
                 style={{
-                  width: 180,
+                  width: 175,
                   height: 48,
-                  fontSize: 13,
+                  fontSize: 12.5,
                   letterSpacing: '0.08em',
                   background: 'linear-gradient(135deg, #6B1170 0%, #C13584 45%, #9333EA 100%)',
                   border: '1px solid rgba(243, 217, 240, 0.45)',
@@ -134,8 +134,8 @@ const AboutSection: React.FC = () => {
           </div>
 
           {/* ──── RIGHT: Portrait ──── */}
-          <FadeIn delay={0.2} x={40} y={0} className="flex-shrink-0">
-            <div className="relative group" style={{ width: 'clamp(280px, 28vw, 400px)' }}>
+          <FadeIn delay={0.2} x={40} y={0} className="flex-shrink-0 w-full flex justify-center lg:w-auto mt-6 lg:mt-0">
+            <div className="relative group max-w-[340px] sm:max-w-none" style={{ width: 'clamp(260px, 30vw, 420px)' }}>
               {/* Ambient glow behind photo */}
               <div
                 className="absolute pointer-events-none"

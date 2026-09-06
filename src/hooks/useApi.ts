@@ -7,6 +7,8 @@ export function useApi<T>(endpoint: string, fallback: T): { data: T; loading: bo
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setData(fallback);
+
     if (!API_BASE) {
       setLoading(false);
       return;
@@ -20,6 +22,7 @@ export function useApi<T>(endpoint: string, fallback: T): { data: T; loading: bo
         setData(json);
       } catch {
         // Silently fall back to hardcoded data
+        setData(fallback);
       } finally {
         setLoading(false);
       }

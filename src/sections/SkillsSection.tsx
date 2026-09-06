@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import FadeIn from '../components/FadeIn';
+import GemIcon from '../components/GemIcon';
 import {
-  Sparkles,
   Code2,
   Layers,
   Server,
@@ -67,7 +67,7 @@ const mainSkillGroups: SkillGroup[] = [
   {
     id: 'ai-systems',
     title: 'AI & Next-Gen Systems',
-    icon: Sparkles,
+    icon: Bot,
     skills: [
       { name: 'AI Integration' },
       { name: 'RAG' },
@@ -141,7 +141,7 @@ const InteractiveSkillCard: React.FC<{
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.6, delay: index * 0.08, ease: [0.25, 0.1, 0.25, 1] }}
-      className="relative rounded-3xl p-6 sm:p-7 transition-all duration-300 bg-[#121216]/80 border border-[#F3D9F0]/15 hover:border-[#F3D9F0]/40 shadow-[0_4px_24px_rgba(0,0,0,0.4)] backdrop-blur-xl group"
+      className="relative rounded-3xl p-5 sm:p-7 transition-all duration-300 bg-[#121216]/80 border border-[#F3D9F0]/15 hover:border-[#F3D9F0]/40 shadow-[0_4px_24px_rgba(0,0,0,0.4)] backdrop-blur-xl group"
     >
       {/* Background ambient spotlight glow that tracks hover */}
       <div
@@ -152,10 +152,10 @@ const InteractiveSkillCard: React.FC<{
       />
 
       {/* Header with Icon & Category Title */}
-      <div className="flex items-center justify-between gap-3 mb-5">
+      <div className="flex items-center justify-between gap-3 mb-4 sm:mb-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110 bg-[#F3D9F0]/10 border border-[#F3D9F0]/20 text-[#F3D9F0]">
-            <GroupIcon className="w-5 h-5" />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110 bg-[#F3D9F0]/10 border border-[#F3D9F0]/20 text-[#F3D9F0]">
+            <GroupIcon className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div>
             <h3 className="text-white font-semibold text-base sm:text-lg tracking-wide">
@@ -170,17 +170,24 @@ const InteractiveSkillCard: React.FC<{
       </div>
 
       {/* Skills Badges Pill Grid */}
-      <div className="flex flex-wrap gap-2.5 sm:gap-3">
-        {group.skills.map((skill) => (
+      <div className="flex flex-wrap gap-2 sm:gap-2.5">
+        {group.skills.map((skill, sIdx) => (
           <motion.div
             key={skill.name}
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            className="relative flex items-center px-4 py-2.5 rounded-2xl cursor-default transition-all duration-200 bg-[#1a1a22]/70 border border-[#F3D9F0]/15 hover:border-[#F3D9F0]/40 hover:bg-[#22222c]"
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{
+              duration: 0.4,
+              delay: index * 0.08 + sIdx * 0.06,
+              ease: 'easeOut',
+            }}
+            whileHover={{ y: -3 }}
+            className="relative flex items-center px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl cursor-default transition-all duration-200 bg-[#1a1a22]/70 border border-[#F3D9F0]/15 hover:border-[#C9A7FF]/50 hover:bg-[#22222c] hover:shadow-[0_0_15px_rgba(201,167,255,0.20)] hover:-translate-y-[3px]"
           >
-            <div className="flex items-center gap-2.5">
-              <span className="w-2 h-2 rounded-full bg-[#C9A7FF]/80 group-hover:bg-[#FFD9EC]" />
-              <span className="text-[#F3D9F0] text-sm sm:text-base font-normal tracking-wide">
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#C9A7FF]/80 group-hover:bg-[#FFD9EC]" />
+              <span className="text-[#F3D9F0] text-xs sm:text-sm md:text-base font-normal tracking-wide">
                 {skill.name}
               </span>
             </div>
@@ -195,7 +202,7 @@ const SkillsSection: React.FC = () => {
   return (
     <section
       id="skills"
-      className="relative bg-[#0C0C0C] rounded-t-[40px] sm:rounded-t-[50px] md:rounded-t-[60px] border-t border-[#F3D9F0]/15 px-5 sm:px-8 md:px-10 py-24 sm:py-28 md:py-36 font-kanit overflow-hidden z-10"
+      className="relative bg-[#0C0C0C] rounded-t-[36px] sm:rounded-t-[50px] md:rounded-t-[60px] border-t border-[#F3D9F0]/15 px-5 sm:px-10 md:px-12 py-28 sm:py-36 md:py-48 font-kanit overflow-hidden z-10"
     >
       {/* Futuristic Background Elements: Tech Grid & Glowing Orbs */}
       <div
@@ -217,11 +224,11 @@ const SkillsSection: React.FC = () => {
 
       <div className="max-w-[1100px] mx-auto relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16 sm:mb-20 md:mb-24">
+        <div className="text-center mb-16 sm:mb-24 md:mb-28">
           <FadeIn delay={0} y={30}>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#F3D9F0]/20 bg-[#F3D9F0]/5 backdrop-blur-md mb-6">
-              <Bot className="w-4 h-4 text-[#FFD9EC]" />
-              <span className="text-xs uppercase tracking-widest text-[#F3D9F0]/90 font-medium">
+            <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full border border-[#F3D9F0]/20 bg-[#F3D9F0]/5 backdrop-blur-md mb-4 sm:mb-6">
+              <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#FFD9EC]" />
+              <span className="text-[11px] sm:text-xs uppercase tracking-widest text-[#F3D9F0]/90 font-medium">
                 Engineering & Intelligence
               </span>
             </div>
@@ -229,15 +236,16 @@ const SkillsSection: React.FC = () => {
 
           <FadeIn delay={0.1} y={40}>
             <h2
-              className="hero-heading font-black uppercase text-center leading-none tracking-tight"
-              style={{ fontSize: 'clamp(2.8rem, 9vw, 130px)' }}
+              className="hero-heading font-black uppercase text-center leading-none tracking-tight flex items-center justify-center gap-2.5 sm:gap-4"
+              style={{ fontSize: 'clamp(2.5rem, 8.5vw, 130px)' }}
             >
-              Technical Skills
+              <GemIcon size={20} className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
+              <span>Skills</span>
             </h2>
           </FadeIn>
 
           <FadeIn delay={0.2} y={20}>
-            <p className="text-[#F3D9F0]/70 font-light text-sm sm:text-base md:text-lg max-w-[620px] mx-auto mt-4 leading-relaxed">
+            <p className="text-[#F3D9F0]/70 font-light text-xs sm:text-base md:text-lg max-w-[620px] mx-auto mt-4 sm:mt-5 leading-relaxed px-2">
               Specialized in modern full-stack development, distributed backend systems,
               databases, and applied AI workflows.
             </p>
@@ -245,7 +253,7 @@ const SkillsSection: React.FC = () => {
         </div>
 
         {/* Primary Interactive Skills Grid (Balanced 6-card grid) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-16 sm:mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-20 sm:mb-28">
           {mainSkillGroups.map((group, index) => (
             <InteractiveSkillCard key={group.id} group={group} index={index} />
           ))}
@@ -253,8 +261,8 @@ const SkillsSection: React.FC = () => {
 
         {/* Secondary Category: Also Worked With (IoT / Hardware) */}
         <FadeIn delay={0.4} y={30}>
-          <div className="relative rounded-3xl p-6 sm:p-8 bg-[#101014]/60 border border-[#F3D9F0]/10 backdrop-blur-md">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div className="relative rounded-3xl p-6 sm:p-10 bg-[#101014]/60 border border-[#F3D9F0]/10 backdrop-blur-md">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-xl bg-[#F3D9F0]/5 border border-[#F3D9F0]/10 flex items-center justify-center text-[#F3D9F0]/60">
                   <CircuitBoard className="w-4 h-4" />
@@ -275,15 +283,16 @@ const SkillsSection: React.FC = () => {
             </div>
 
             <div className="flex flex-wrap gap-2.5 sm:gap-3">
-              {secondarySkills.map((item) => (
-                <motion.span
-                  key={item}
-                  whileHover={{ scale: 1.04, y: -2 }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#17171f]/60 border border-[#F3D9F0]/10 hover:border-[#F3D9F0]/30 text-[#F3D9F0]/75 hover:text-[#F3D9F0] text-xs sm:text-sm font-light transition-all duration-200 cursor-default"
-                >
-                  <Cpu className="w-3.5 h-3.5 text-[#F3D9F0]/40" />
-                  {item}
-                </motion.span>
+              {secondarySkills.map((item, idx) => (
+                <FadeIn key={item} delay={0.4 + idx * 0.08} y={15}>
+                  <motion.span
+                    whileHover={{ y: -3 }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#17171f]/60 border border-[#F3D9F0]/10 hover:border-[#C9A7FF]/40 text-[#F3D9F0]/75 hover:text-[#F3D9F0] text-xs sm:text-sm font-light transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[0_0_15px_rgba(201,167,255,0.20)] cursor-default"
+                  >
+                    <Cpu className="w-3.5 h-3.5 text-[#F3D9F0]/40" />
+                    {item}
+                  </motion.span>
+                </FadeIn>
               ))}
             </div>
           </div>

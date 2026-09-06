@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
 
 interface FadeInProps {
   children: React.ReactNode;
@@ -8,29 +8,22 @@ interface FadeInProps {
   x?: number;
   y?: number;
   className?: string;
-  as?: keyof React.JSX.IntrinsicElements;
 }
 
 const FadeIn: React.FC<FadeInProps> = ({
   children,
   delay = 0,
-  duration = 0.7,
+  duration = 0.6,
   x = 0,
-  y = 30,
+  y = 25,
   className = '',
-  as = 'div',
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '50px', amount: 0 });
-
-  const MotionComponent = motion.create(as as any);
-
   return (
-    <MotionComponent
-      ref={ref}
+    <motion.div
       className={className}
       initial={{ opacity: 0, x, y }}
-      animate={isInView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, x, y }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      viewport={{ once: true, margin: '-20px' }}
       transition={{
         delay,
         duration,
@@ -38,8 +31,9 @@ const FadeIn: React.FC<FadeInProps> = ({
       }}
     >
       {children}
-    </MotionComponent>
+    </motion.div>
   );
 };
 
 export default FadeIn;
+
